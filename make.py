@@ -38,12 +38,10 @@ TRANSITION_HONEST_INERTIA = 0.95
 # state.
 TRANSITION_DISHONEST_INERTIA = 0.8
 
-# --------------------------------------------------------------- Transition --
+# ---------------------------------------------------- Transition & emission --
 
 def transition():
     pass
-
-# ----------------------------------------------------------------- Emission --
 
 def emission():
     pass
@@ -55,4 +53,3 @@ def make_states(transition_matrix):
     
 def make_values(states, emission_matrix):
     pass
-
