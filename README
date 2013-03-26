@@ -4,14 +4,33 @@ REQUIREMENTS
     3) SciPy
     
 CONTENTS
-    make.py 
-        Module for making data. Contains generation parameters and data-making 
-        functions:
+    make.py -- module for making data. Contains generation parameters and data-
+    making functions.
             
-            import make
             transition_matrix = make.transitions()
             emission_matrix = make.emissions()
-            states = make.states(transition_matrix)
-            values = make.values(states, emission_matrix)
+            correct_states = make.states(transition_matrix)
+            values = make.values(correct_states, emission_matrix)
+            
+    train.py -- module with 3 main HMM algorithms: EM, Viterbi and forward-back-
+    ward.
+                
+            # HMM is a tuple, (transition_matrix, emission_matrix)
+            hmm = train.hmm(values)
+            states = train.states_viterbi(values, hmm[0], hmm[1])
+            
+    check.py -- module for checking quality of resulting segmentation.
         
+            precision = check.segments_precision(correct_states, states)
+            recall = check.segments_recall(correct_states, states)
+            
+    visualisze.py -- module for visualization of transitions/emission probabili-
+    ties and resulting segmentations. 
+            
+            # Open new tabs in browser with table of emission probabilities and 
+            # pictures of transition graph and segmentation quality.
+            visualize.transitions(transition_matrix)
+            visualize.emissions(emission_matrix)
+            visualize.segmentation(correct_values, values)
+            
 Comments on any part of the code are highly appreciated! :)
