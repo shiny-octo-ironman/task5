@@ -24,7 +24,7 @@ CONTENTS
             precision = check.segments_precision(correct_states, states)
             recall = check.segments_recall(correct_states, states)
             
-    visualisze.py -- module for visualization of transitions/emission probabili-
+    visualisze.py -- module for visualization of transition/emission probabili-
     ties and resulting segmentations. 
             
             # Open new tabs in browser with table of emission probabilities and 
