@@ -1,3 +1,7 @@
+LIBRARY
+    Hidden Markov models test -- task five in SHAD "analysis of sequences in 
+    bioinformatics" course.
+
 REQUIREMENTS
     1) Python 3
     2) NumPy
@@ -32,5 +36,6 @@ CONTENTS
             visualize.transitions(transition_matrix)
             visualize.emissions(emission_matrix)
             visualize.segmentation(correct_values, values)
-            
-Comments on any part of the code are highly appreciated! :)
+
+FEEDBACK
+    Comments on any part of the code are highly appreciated! :)
