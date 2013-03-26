@@ -1,1 +1,17 @@
-
+REQUIREMENTS
+    1) Python 3
+    2) NumPy
+    3) SciPy
+    
+CONTENTS
+    make.py 
+        Module for making data. Contains generation parameters and data-making 
+        functions:
+            
+            import make
+            transition_matrix = make.transitions()
+            emission_matrix = make.emissions()
+            states = make.states(transition_matrix)
+            values = make.values(states, emission_matrix)
+        
+Comments on any part of the code are highly appreciated! :)
