@@ -60,11 +60,13 @@ def transition():
         # Transition to other dishonest states
         if N_STATES > 2:
             indices = range(1, s) + range(s + 1, N_STATES)
+            
             distribution = random_distribution_nonzeros(
                 N_STATES - 2, 
                 TRANSITION_DISHONEST_MAX, 
                 TRANSITION_MIN_ENTROPY
             )
+            
             result[s, indices] = \
                 distribution * (1 - TRANSITION_DISHONEST_SELF_INERTIA)
         

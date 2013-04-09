@@ -15,5 +15,5 @@ print "States: ", states
 print
 print "Values: ", values
 print
-print "States exp. fraction: ", learn.ergodic_distribution(transition_matrix)
+print "States expected fraction: ", learn.ergodic_distribution(transition_matrix)
 print "States real fraction: ", learn.state_fractions(states)
