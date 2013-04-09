@@ -1,3 +1,7 @@
+LIBRARY
+    Hidden Markov models test -- task five in SHAD "analysis of sequences in 
+    bioinformatics" course.
+
 REQUIREMENTS
     1) Python 3
     2) NumPy
@@ -24,7 +28,7 @@ CONTENTS
             precision = check.segments_precision(correct_states, states)
             recall = check.segments_recall(correct_states, states)
             
-    visualisze.py -- module for visualization of transitions/emission probabili-
+    visualisze.py -- module for visualization of transition/emission probabili-
     ties and resulting segmentations. 
             
             # Open new tabs in browser with table of emission probabilities and 
@@ -32,5 +36,6 @@ CONTENTS
             visualize.transitions(transition_matrix)
             visualize.emissions(emission_matrix)
             visualize.segmentation(correct_values, values)
-            
-Comments on any part of the code are highly appreciated! :)
+
+FEEDBACK
+    Comments on any part of the code are highly appreciated! :)
