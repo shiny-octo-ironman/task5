@@ -1,55 +1,105 @@
-#!/usr/bin/env python3
+from tweaks import *
 
-# ------------------------------------------------------------------- Tweaks --
+# ----------------------------------------------------- Random distributions --
 
-# There is 1 "honest" state (index 0) and a few "dishonest" state (indices 1, 
-# 2, ...). "Honest" state emits all values with equal probabilities, and is the
-# initial state.
+def p_logp(p):
+    if p < 1e-8: 
+        return 0
+    return p * log(p)
 
-N_STATES = 1 + 2 # one "honest" state plus a few "dishonest" states
-N_VALUES = 6     # six outcomes of a dice roll
+def entropy(probabilities):
+    return sum(-p_logp(p) for p in probabilities)
+    
+def entropy_uniform(N):
+    p = 1.0 / N
+    return -p_logp(p) * N
 
-# When generating transition or emission probabilities, generate them in such a 
-# manner, that entropy of resulting probability distribution will be at least
-# X times bigger, than entropy of a uniform distribution
-TRANSITION_MIN_ENTROPY = 3
-EMISSION_MIN_ENTROPY   = 3
+def random_distribution(N, min_entropy):
+    if N == 1:
+        return array([1.0])
 
-# First, transition and emission *weights* are generated -- with a uniform 
-# distribution with parameters below. Next, weights are normalized to get 
-# probabilities.
-TRANSITION_WEIGHTS_RANGE = (0, 10)
-EMISSION_WEIGHTS_RANGE   = (0, 10)
+    distribution = np.random.random_sample(N)
+    distribution /= sum(distribution)
+    
+    while entropy_uniform(N) / entropy(distribution) < min_entropy:
+        distribution[np.random.randint(N)] *= 1.1
+        distribution /= sum(distribution)
+        
+    return distribution
 
-# In dishonest states, only K emission weights will be non-zero, and only M
-# transition weights will be non-zero (not counting transition to honest state).
-# In a sense, it's a "sparsity" tweak.
-TRANSITION_DISHONEST_MAX = N_STATES - 1
-EMISSION_DISHONEST_MAX   = N_VALUES     # smaller value will make dishonesty 
-                                        # easily detectable by segmentation 
-                                        # algorithm :)
-
-# Probability of transition from honest state to itself.
-TRANSITION_HONEST_INERTIA = 0.95 
-
-# Probability of transition from dishonest state to some other dishonest state 
-# (including itself). Not quite the same thing as TRANSITION_HONEST_INERTIA:
-# 1 - TRANSITION_DISHONEST_INERTIA is the probability of a return to "honest" 
-# state.
-TRANSITION_DISHONEST_INERTIA = 0.8
+def random_distribution_nonzeros(N, N_nonzeros, min_entropy):
+    result = zeros(N)
+    non_zeros = np.random.choice(N, min(N, N_nonzeros), replace=False)
+    result[non_zeros] = random_distribution(N, min_entropy)
+    return result
+    
+def random(probabilities):
+    N = len(probabilities)
+    bins = add.accumulate(probabilities)
+    values = range(N)
+    return values[digitize([np.random.rand()], bins)]    
 
 # ---------------------------------------------------- Transition & emission --
 
 def transition():
-    pass
+    result = zeros([N_STATES, N_STATES])
+    
+    # Honest state
+    result[0, 0] = TRANSITION_HONEST_INERTIA
+    result[0, 1:] = \
+        ones(N_STATES - 1) * (1 - TRANSITION_HONEST_INERTIA) / (N_STATES - 1)
+    
+    # Dishonest states, return to honest
+    result[1:, 0] = 1 - TRANSITION_DISHONEST_INERTIA
+    
+    # Dishonest states, rest
+    for s in range(1, N_STATES):
+        # Dishonest self-inertia
+        result[s, s] = N_STATES > 2 and TRANSITION_DISHONEST_SELF_INERTIA or 1.0
+        
+        # Transition to other dishonest states
+        if N_STATES > 2:
+            indices = range(1, s) + range(s + 1, N_STATES)
+            distribution = random_distribution_nonzeros(
+                N_STATES - 2, 
+                TRANSITION_DISHONEST_MAX, 
+                TRANSITION_MIN_ENTROPY
+            )
+            result[s, indices] = \
+                distribution * (1 - TRANSITION_DISHONEST_SELF_INERTIA)
+        
+        # Multiply by dishonest inertia (rest is transition to honest state)
+        result[s, 1:] *= TRANSITION_DISHONEST_INERTIA
+        
+    return result
 
 def emission():
-    pass
+    result = zeros([N_STATES, N_VALUES])
     
-# ---------------------------------------------------------------- Modelling --
-
-def make_states(transition_matrix):
-    pass
+    # Honest emission
+    result[0] = ones(N_VALUES) / N_VALUES
     
-def make_values(states, emission_matrix):
-    pass
+    # Dishonest emissions
+    for state in range(1, N_STATES):
+        result[state] = random_distribution_nonzeros(
+            N_VALUES, 
+            EMISSION_DISHONEST_MAX, 
+            EMISSION_MIN_ENTROPY
+        )
+        
+    return result
+    
+# ----------------------------------------------------------------- Modeling --
+    
+def states(transition_matrix, sample_length):
+    state = 0
+    result = [0] * sample_length
+    
+    for i in range(sample_length):
+        result[i] = state
+        state = random(transition_matrix[state])
+        
+    return result
+    
+def values(states, emission_matrix):
+    return [random(emission_matrix[state]) for state in states]
