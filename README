@@ -22,9 +22,9 @@ CONTENTS
     ward.
                 
             # HMM is a tuple, (transition_matrix, emission_matrix)
-            hmm = train.hmm(values)
-            states = train.states_viterbi(values, hmm[0], hmm[1])
-            states = train.states_forward_backward(values, hmm[0], hmm[1])
+            hmm = learn.hmm(values)
+            states = learn.states_viterbi(values, hmm[0], hmm[1])
+            states = learn.states_forward_backward(values, hmm[0], hmm[1])
             
     check.py -- module for checking quality of resulting segmentation.
         
