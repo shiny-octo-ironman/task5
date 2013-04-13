@@ -3,7 +3,7 @@ import make
 import learn
 
 np.random.seed(42)
-N = 20
+N = 15
 
 # ----------------------------------------------------------- Data generation --
 
@@ -14,7 +14,7 @@ values = make.values(states, emission_matrix)
 
 print "Transition matrix: \n", transition_matrix
 print 
-print "Emission matrix: \n", emission_matrix
+print "Emission matrix: \n", log(emission_matrix)
 print
 print "States: ", states
 print
@@ -27,8 +27,14 @@ print
 # -------------------------------------------------------- Viterbi and F.-B. --
 
 states_vi = learn.states_viterbi(values, transition_matrix, emission_matrix)
+states_fb = learn.states_forward_backward(values, transition_matrix, emission_matrix)
 
 print "-----------------------------------------------------------------------"
 print "Viterbi states: ", states_vi
 print
 print "Viterbi accuracy: ", mean(states_vi == states)
+print
+print "Fwd-Back states: ", states_fb
+print
+print "Fwd-Back accuracy: ", mean(states_fb == states)
+    
