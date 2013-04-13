@@ -101,7 +101,7 @@ def states(transition_matrix, sample_length):
         result[i] = state
         state = random(transition_matrix[state])
         
-    return result
+    return array(result, dtype=int)
     
 def values(states, emission_matrix):
-    return [random(emission_matrix[state]) for state in states]
+    return array([random(emission_matrix[state]) for state in states], dtype=int)

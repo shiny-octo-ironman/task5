@@ -6,8 +6,13 @@ from numpy import *
 # 2, ...). "Honest" state emits all values with equal probabilities, and is the
 # initial state.
 
-N_STATES = 1 + 2 # one "honest" state plus a few "dishonest" states
+N_STATES = 1 + 1 # one "honest" state plus a few "dishonest" states
 N_VALUES = 6     # six outcomes of a dice roll
+
+# Whether to use apriori information: 
+# - Chain starts in first state;
+# - First state is "honest", i.e. emission probabilities are all equal.
+USE_APRIORI = False
 
 # When generating transition or emission probabilities, generate values, not
 # defined by "inertia" tweaks below in such a manner, that entropy of resulting 
@@ -36,3 +41,6 @@ TRANSITION_DISHONEST_INERTIA = 0.9
 # TRANSITION_DISHONEST_INERTIA * TRANSITION_DISHONEST_SELF_INERTIA will be
 # the probability of transition from dishonest state to itself
 TRANSITION_DISHONEST_SELF_INERTIA = 0.8
+
+# Constant for representing infinite weight :)
+INF = 1e+8
