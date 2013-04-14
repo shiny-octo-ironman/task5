@@ -54,6 +54,15 @@ def states_viterbi(values, transition_matrix, emission_matrix):
        
 # ---------------------------------------------------- Forward-Backward (ok) --
     
+def w_sum(w, axis=0):
+    # Infer shape for maximum weight, so it could correctly broadcast
+    shape = list(w.shape)
+    shape[axis] = 1
+    
+    # Use maximum weight as common multiplier
+    w_max = np.max(w, axis=axis)
+    return w_max + log(sum(exp(w - w_max.reshape(shape)), axis=axis))
+        
 def tail_weights(values, T, E, last_column):
     N = len(values)             
     W = zeros([N, N_STATES]) # [W]eights
@@ -64,7 +73,7 @@ def tail_weights(values, T, E, last_column):
         transition_cost = T
         target_cost = tile(W[i + 1], [N_STATES, 1])        
         cost = emission_cost + transition_cost + target_cost
-        W[i] = log(sum(exp(cost), axis=1))
+        W[i] = w_sum(cost, axis=1)
         
     return W
         
@@ -86,12 +95,12 @@ def posteriors(values, transition_matrix, emission_matrix):
     W = head_W[::-1] + tail_W - E[:, values].transpose()
    
     # Normalize to get posterior weights
-    W -= log(sum(exp(head_W[0])))
+    W -= w_sum(head_W[0])
     return W
     
 def states_forward_backward(values, transition_matrix, emission_matrix):
-    P = posteriors(values, transition_matrix, emission_matrix)
-    return argmax(P, 1)
+    W = posteriors(values, transition_matrix, emission_matrix)
+    return argmax(W, 1)
     
 # --------------------------------------------------------------- Baum-Welch --
 

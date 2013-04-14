@@ -6,7 +6,7 @@ from numpy import *
 # 2, ...). "Honest" state emits all values with equal probabilities, and is the
 # initial state.
 
-N_STATES = 1 + 4 # one "honest" state plus a few "dishonest" states
+N_STATES = 1 + 1 # one "honest" state plus a few "dishonest" states
 N_VALUES = 6     # six outcomes of a dice roll
 
 # Whether or not to use apriori information: 
