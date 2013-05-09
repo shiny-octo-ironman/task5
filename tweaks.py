@@ -2,17 +2,29 @@ from scipy.stats import *
 import numpy as np
 from numpy import *
 
+# ------------------------------------------------------------ Metaparameters --
+
+# Master random seed
+MASTER_SEED = 42
+
+# Length of each sequence, and number of sequences (experiments) for getting 
+# mean and confidence intervals
+N = 100
+K = 1
+
 # There is 1 "honest" state (index 0) and a few "dishonest" state (indices 1, 
 # 2, ...). "Honest" state emits all values with equal probabilities, and is the
 # initial state.
 
-N_STATES = 1 + 1 # one "honest" state plus a few "dishonest" states
+N_STATES = 1 + 2 # one "honest" state plus a few "dishonest" states
 N_VALUES = 6     # six outcomes of a dice roll
+
+# ---------------------------------------------------------- Chain parameters --
 
 # Whether or not to use apriori information: 
 # - Chain starts in first state;
 # - First state is "honest", i.e. emission probabilities are all equal.
-USE_APRIORI = False
+USE_APRIORI = True
 
 # When generating transition or emission probabilities, generate values, not
 # defined by "inertia" tweaks below in such a manner, that entropy of resulting 

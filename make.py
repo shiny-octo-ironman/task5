@@ -1,6 +1,8 @@
-from tweaks import *
+import tweaks as _
+import numpy as np
+from numpy import *
 
-# ----------------------------------------------------- Random distributions --
+# ------------------------------------------------------ Random distributions --
 
 def p_logp(p):
     if p < 1e-8: 
@@ -39,59 +41,59 @@ def random(probabilities):
     values = range(N)
     return values[digitize([np.random.rand()], bins)]    
 
-# ---------------------------------------------------- Transition & emission --
+# ----------------------------------------------------- Transition & emission --
 
 def transition():
-    result = zeros([N_STATES, N_STATES])
+    result = zeros([_.N_STATES, _.N_STATES])
     
     # Honest state
-    result[0, 0] = TRANSITION_HONEST_INERTIA
+    result[0, 0] = _.TRANSITION_HONEST_INERTIA
     result[0, 1:] = \
-        ones(N_STATES - 1) * (1 - TRANSITION_HONEST_INERTIA) / (N_STATES - 1)
+        ones(_.N_STATES - 1) * (1 - _.TRANSITION_HONEST_INERTIA) / (_.N_STATES - 1)
     
     # Dishonest states, return to honest
-    result[1:, 0] = 1 - TRANSITION_DISHONEST_INERTIA
+    result[1:, 0] = 1 - _.TRANSITION_DISHONEST_INERTIA
     
     # Dishonest states, rest
-    for s in range(1, N_STATES):
+    for s in range(1, _.N_STATES):
         # Dishonest self-inertia
-        result[s, s] = N_STATES > 2 and TRANSITION_DISHONEST_SELF_INERTIA or 1.0
+        result[s, s] = _.N_STATES > 2 and _.TRANSITION_DISHONEST_SELF_INERTIA or 1.0
         
         # Transition to other dishonest states
-        if N_STATES > 2:
-            indices = range(1, s) + range(s + 1, N_STATES)
+        if _.N_STATES > 2:
+            indices = range(1, s) + range(s + 1, _.N_STATES)
             
             distribution = random_distribution_nonzeros(
-                N_STATES - 2, 
-                TRANSITION_DISHONEST_MAX, 
-                TRANSITION_MIN_ENTROPY
+                _.N_STATES - 2, 
+                _.TRANSITION_DISHONEST_MAX, 
+                _.TRANSITION_MIN_ENTROPY
             )
             
             result[s, indices] = \
-                distribution * (1 - TRANSITION_DISHONEST_SELF_INERTIA)
+                distribution * (1 - _.TRANSITION_DISHONEST_SELF_INERTIA)
         
         # Multiply by dishonest inertia (rest is transition to honest state)
-        result[s, 1:] *= TRANSITION_DISHONEST_INERTIA
+        result[s, 1:] *= _.TRANSITION_DISHONEST_INERTIA
         
     return result
 
 def emission():
-    result = zeros([N_STATES, N_VALUES])
+    result = zeros([_.N_STATES, _.N_VALUES])
     
     # Honest emission
-    result[0] = ones(N_VALUES) / N_VALUES
+    result[0] = ones(_.N_VALUES) / _.N_VALUES
     
     # Dishonest emissions
-    for state in range(1, N_STATES):
+    for state in range(1, _.N_STATES):
         result[state] = random_distribution_nonzeros(
-            N_VALUES, 
-            EMISSION_DISHONEST_MAX, 
-            EMISSION_MIN_ENTROPY
+            _.N_VALUES, 
+            _.EMISSION_DISHONEST_MAX, 
+            _.EMISSION_MIN_ENTROPY
         )
         
     return result
     
-# ----------------------------------------------------------------- Modeling --
+# ------------------------------------------------------------------ Modeling --
     
 def states(transition_matrix, sample_length):
     state = 0
@@ -105,3 +107,8 @@ def states(transition_matrix, sample_length):
     
 def values(states, emission_matrix):
     return array([random(emission_matrix[state]) for state in states], dtype=int)
+    
+# -------------------------------------------------- Reproducible experiments --
+
+def experiment_seeds():
+    return np.random.randint(0, 1000, _.K)
